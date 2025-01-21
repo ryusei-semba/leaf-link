@@ -71,40 +71,21 @@ export default function Home() {
         <h1 className="text-3xl font-bold mb-8 text-gray-800">観葉植物管理システム</h1>
         
         {/* Large Top Left Leaf */}
-        <div className="absolute -top-32 -left-32 w-[500px] h-[500px] text-green-200">
+        <div className="fixed -top-32 -left-32 w-[500px] h-[500px] text-green-200 pointer-events-none">
           <svg className="w-full h-full transform rotate-45 leaf-wave" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17 8C17 8 17.5 14 12 19.5C6.5 14 7 8 7 8C7 8 7 3 12 3C17 3 17 8 17 8Z"/>
           </svg>
         </div>
 
         {/* Large Bottom Right Leaf */}
-        <div className="absolute -bottom-24 -right-24 w-[400px] h-[400px] text-emerald-200">
+        <div className="fixed -bottom-24 -right-24 w-[400px] h-[400px] text-emerald-200 pointer-events-none">
           <svg className="w-full h-full transform -rotate-12 leaf-wave" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '0.5s' }}>
             <path d="M12 2C15 2 17 4 17 8C17 12 12 19.5 12 19.5C12 19.5 7 12 7 8C7 4 9 2 12 2Z"/>
           </svg>
         </div>
 
-        {/* Small Floating Leaves */}
-        <div className="absolute top-1/4 right-1/4 w-40 h-40">
-          <div className="relative">
-            <div className="absolute inset-0 bg-green-100/30 rounded-full ripple"></div>
-            <svg className="w-full h-full transform float text-green-200" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '0.3s' }}>
-              <path d="M12 3C14 3 16.5 4 16.5 8C16.5 12 12 17 12 17C12 17 7.5 12 7.5 8C7.5 4 10 3 12 3Z"/>
-            </svg>
-          </div>
-        </div>
-
-        <div className="absolute bottom-1/3 left-1/3 w-32 h-32">
-          <div className="relative">
-            <div className="absolute inset-0 bg-emerald-100/30 rounded-full ripple" style={{ animationDelay: '1s' }}></div>
-            <svg className="w-full h-full transform float text-emerald-200" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '1.1s' }}>
-              <path d="M15 7C15 7 15.5 11 12 15C8.5 11 9 7 9 7C9 7 9 4 12 4C15 4 15 7 15 7Z"/>
-            </svg>
-          </div>
-        </div>
-
         {/* Additional Decorative Leaves */}
-        <div className="absolute top-1/3 -right-16 w-48 h-48 text-green-200">
+        <div className="fixed -top-16 -right-16 w-48 h-48 text-green-200 pointer-events-none">
           <svg className="w-full h-full transform rotate-90 leaf-wave" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '1s' }}>
             <path d="M12 3C15 3 17 5 17 8C17 11 12 17 12 17C12 17 7 11 7 8C7 5 9 3 12 3Z"/>
           </svg>
