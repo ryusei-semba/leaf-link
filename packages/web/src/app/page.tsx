@@ -3,12 +3,16 @@
 import { useEffect, useState } from 'react'
 
 type Plant = {
-  id: string
-  plantName: string
+  id: number
+  name: string
+  plantName?: string
   species: string
   purchaseDate: string
   location: string
   notes: string
+  description?: string
+  createdAt: string
+  updatedAt: string
 }
 
 type APIPlant = {
@@ -33,7 +37,7 @@ const formatDate = (date: Date): string => {
 export default function Home() {
   const [plants, setPlants] = useState<Plant[]>([])
   const [apiPlants, setApiPlants] = useState<APIPlant[]>([])
-  const [formData, setFormData] = useState<Omit<Plant, 'id'>>({
+  const [formData, setFormData] = useState({
     plantName: '',
     species: '',
     purchaseDate: formatDate(new Date()),
@@ -41,34 +45,55 @@ export default function Home() {
     notes: ''
   })
 
-  useEffect(() => {
-    const fetchPlants = async () => {
-      try {
-        const response = await fetch('http://localhost:8080/api/plants')
-        const data = await response.json()
-        setApiPlants(data.plants)
-      } catch (err) {
-        console.error('Error fetching plants:', err)
-      }
+  const fetchPlants = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/plants')
+      const data = await response.json()
+      setPlants(data.plants)
+    } catch (err) {
+      console.error('Error fetching plants:', err)
     }
+  }
 
+  useEffect(() => {
     fetchPlants()
   }, [])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newPlant: Plant = {
-      id: crypto.randomUUID(),
-      ...formData
+    try {
+      const response = await fetch('http://localhost:8080/api/plants', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.plantName,
+          species: formData.species,
+          description: formData.notes,
+          location: formData.location,
+          purchaseDate: formData.purchaseDate
+        })
+      })
+      
+      if (!response.ok) {
+        throw new Error('Failed to create plant')
+      }
+
+      // フォームをリセット
+      setFormData({
+        plantName: '',
+        species: '',
+        purchaseDate: formatDate(new Date()),
+        location: '',
+        notes: ''
+      })
+
+      // 植物一覧を再取得
+      fetchPlants()
+    } catch (err) {
+      console.error('Error creating plant:', err)
     }
-    setPlants([...plants, newPlant])
-    setFormData({
-      plantName: '',
-      species: '',
-      purchaseDate: formatDate(new Date()),
-      location: '',
-      notes: ''
-    })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -79,8 +104,21 @@ export default function Home() {
     }))
   }
 
-  const handleDelete = (id: string) => {
-    setPlants(plants.filter(plant => plant.id !== id))
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/plants/${id}`, {
+        method: 'DELETE'
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete plant')
+      }
+
+      // 植物一覧を再取得
+      fetchPlants()
+    } catch (err) {
+      console.error('Error deleting plant:', err)
+    }
   }
 
   const getLocationLabel = (value: string) => {
@@ -127,7 +165,7 @@ export default function Home() {
                   name="plantName"
                   value={formData.plantName}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-900 placeholder-gray-400"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="モンステラ"
                   required
                 />
@@ -143,7 +181,7 @@ export default function Home() {
                   name="species"
                   value={formData.species}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-900 placeholder-gray-400"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="デリシオサ"
                 />
               </div>
@@ -159,7 +197,7 @@ export default function Home() {
                     name="purchaseDate"
                     value={formData.purchaseDate}
                     onChange={handleChange}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-900"
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   />
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
@@ -179,7 +217,7 @@ export default function Home() {
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-900"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   required
                 >
                   <option value="">設置場所を選択</option>
@@ -202,7 +240,7 @@ export default function Home() {
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 bg-white text-gray-900 placeholder-gray-400"
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 placeholder="水やりの頻度や特記事項など"
               />
             </div>
@@ -232,42 +270,29 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {plants.length === 0 && apiPlants.length === 0 ? (
+                {plants.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
                       登録された植物はありません
                     </td>
                   </tr>
                 ) : (
-                  <>
-                    {plants.map(plant => (
-                      <tr key={plant.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.plantName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.species}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{getLocationLabel(plant.location)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <button
-                            onClick={() => handleDelete(plant.id)}
-                            className="text-red-600 hover:text-red-900 transition-colors duration-200"
-                          >
-                            削除
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                    {apiPlants.map(plant => (
-                      <tr key={plant.id} className="hover:bg-gray-50 bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">-</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">-</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">-</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                          サンプルデータ
-                        </td>
-                      </tr>
-                    ))}
-                  </>
+                  plants.map(plant => (
+                    <tr key={plant.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.name || plant.plantName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.species}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate || formatDate(new Date(plant.createdAt))}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{getLocationLabel(plant.location)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => handleDelete(plant.id)}
+                          className="text-red-600 hover:text-red-900 focus:outline-none"
+                        >
+                          削除
+                        </button>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>

@@ -1,19 +1,15 @@
 package main
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/ryusei-semba/leaf-link/packages/api/database"
+	"github.com/ryusei-semba/leaf-link/packages/api/handlers"
 )
 
-type Plant struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	ImageURL    string `json:"imageUrl"`
-}
-
 func main() {
+	// データベース接続を初期化
+	database.Connect()
+
 	r := gin.Default()
 
 	// CORSミドルウェアを追加
@@ -30,33 +26,10 @@ func main() {
 		c.Next()
 	})
 
-	// サンプルデータを返すエンドポイント
-	r.GET("/api/plants", func(c *gin.Context) {
-		plants := []Plant{
-			{
-				ID:          "1",
-				Name:        "モンステラ",
-				Description: "大きな葉が特徴的な観葉植物です。",
-				ImageURL:    "https://example.com/monstera.jpg",
-			},
-			{
-				ID:          "2",
-				Name:        "サンスベリア",
-				Description: "丈夫で育てやすい観葉植物です。",
-				ImageURL:    "https://example.com/sansevieria.jpg",
-			},
-			{
-				ID:          "3",
-				Name:        "パキラ",
-				Description: "幹が編み込まれた観葉植物です。",
-				ImageURL:    "https://example.com/pachira.jpg",
-			},
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"plants": plants,
-		})
-	})
+	// APIエンドポイントを設定
+	r.GET("/api/plants", handlers.GetPlants)
+	r.POST("/api/plants", handlers.CreatePlant)
+	r.DELETE("/api/plants/:id", handlers.DeletePlant)
 
 	r.Run(":8080")
 }
