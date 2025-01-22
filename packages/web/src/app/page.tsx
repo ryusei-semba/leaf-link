@@ -1,14 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-interface Plant {
+type Plant = {
   id: string
   plantName: string
   species: string
   purchaseDate: string
   location: string
   notes: string
+}
+
+type APIPlant = {
+  id: string
+  name: string
+  description: string
+  imageUrl: string
 }
 
 const LOCATIONS = [
@@ -25,6 +32,7 @@ const formatDate = (date: Date): string => {
 
 export default function Home() {
   const [plants, setPlants] = useState<Plant[]>([])
+  const [apiPlants, setApiPlants] = useState<APIPlant[]>([])
   const [formData, setFormData] = useState<Omit<Plant, 'id'>>({
     plantName: '',
     species: '',
@@ -32,6 +40,20 @@ export default function Home() {
     location: '',
     notes: ''
   })
+
+  useEffect(() => {
+    const fetchPlants = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/plants')
+        const data = await response.json()
+        setApiPlants(data.plants)
+      } catch (err) {
+        console.error('Error fetching plants:', err)
+      }
+    }
+
+    fetchPlants()
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -210,29 +232,42 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {plants.length === 0 ? (
+                {plants.length === 0 && apiPlants.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
                       登録された植物はありません
                     </td>
                   </tr>
                 ) : (
-                  plants.map(plant => (
-                    <tr key={plant.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.plantName}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.species}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{getLocationLabel(plant.location)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => handleDelete(plant.id)}
-                          className="text-red-600 hover:text-red-900 transition-colors duration-200"
-                        >
-                          削除
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+                  <>
+                    {plants.map(plant => (
+                      <tr key={plant.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.plantName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.species}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{getLocationLabel(plant.location)}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <button
+                            onClick={() => handleDelete(plant.id)}
+                            className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                          >
+                            削除
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {apiPlants.map(plant => (
+                      <tr key={plant.id} className="hover:bg-gray-50 bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">-</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">-</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-900">-</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                          サンプルデータ
+                        </td>
+                      </tr>
+                    ))}
+                  </>
                 )}
               </tbody>
             </table>
