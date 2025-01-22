@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  height: 42px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background: transparent;
+  bottom: 0;
+  color: transparent;
+  cursor: pointer;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}
+
+@keyframes leafWave {
+  0% {
+    transform: rotate(-8deg) scale(0.95);
+  }
+  25% {
+    transform: rotate(0deg) scale(1.05);
+  }
+  50% {
+    transform: rotate(8deg) scale(0.95);
+  }
+  75% {
+    transform: rotate(0deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(-8deg) scale(0.95);
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+}
+
+.leaf-wave {
+  animation: leafWave 12s ease-in-out infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ripple {
+  animation: ripple 4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
