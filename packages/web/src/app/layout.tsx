@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import "./globals.css";
 
 const inter = Inter({
@@ -19,9 +21,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={inter.variable}>
-      <body className="antialiased bg-gray-50 text-gray-900">
-        {children}
+    <html lang="ja" className={inter.variable} suppressHydrationWarning>
+      <body className="antialiased bg-background text-text-primary">
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <ThemeToggle />
+        </ThemeProvider>
       </body>
     </html>
   );
