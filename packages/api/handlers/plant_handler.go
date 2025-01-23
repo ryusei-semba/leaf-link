@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"bytes"
+	"io"
+	"mime"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ryusei-semba/leaf-link/packages/api/database"
@@ -54,33 +58,108 @@ func DeletePlant(c *gin.Context) {
 func UpdatePlant(c *gin.Context) {
 	id := c.Param("id")
 
-	// 既存のプラントを取得
 	var plant models.Plant
 	if err := database.GetDB().First(&plant, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Plant not found"})
 		return
 	}
 
-	// リクエストボディをバインド
 	var input models.Plant
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// 更新するフィールドを設定
 	plant.Name = input.Name
 	plant.Species = input.Species
 	plant.Description = input.Description
 	plant.Location = input.Location
-	plant.Notes = input.Notes
 	plant.PurchaseDate = input.PurchaseDate
 
-	// データベースを更新
 	if err := database.GetDB().Save(&plant).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update plant"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"plant": plant})
+}
+
+// UploadPlantImage は植物の画像をアップロードするハンドラーです
+func UploadPlantImage(c *gin.Context) {
+	id := c.Param("id")
+
+	// 画像ファイルを取得
+	file, err := c.FormFile("image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "画像ファイルが見つかりません"})
+		return
+	}
+
+	// ファイルを開く
+	src, err := file.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "ファイルの読み込みに失敗しました"})
+		return
+	}
+	defer src.Close()
+
+	// バイナリデータを読み込む
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, src); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "データの読み込みに失敗しました"})
+		return
+	}
+
+	// MIMEタイプを取得
+	ext := filepath.Ext(file.Filename)
+	mimeType := mime.TypeByExtension(ext)
+	if mimeType == "" {
+		mimeType = "application/octet-stream"
+	}
+
+	// データベースの更新
+	var plant models.Plant
+	if err := database.GetDB().First(&plant, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "植物が見つかりません"})
+		return
+	}
+
+	// 画像データを更新
+	plant.ImageData = buf.Bytes()
+	plant.ImageType = mimeType
+
+	if err := database.GetDB().Save(&plant).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "データベースの更新に失敗しました"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "画像のアップロードが完了しました",
+		"plant": gin.H{
+			"id":        plant.ID,
+			"name":      plant.Name,
+			"imageType": plant.ImageType,
+		},
+	})
+}
+
+// GetPlantImage は植物の画像を取得するハンドラーです
+func GetPlantImage(c *gin.Context) {
+	id := c.Param("id")
+
+	var plant models.Plant
+	if err := database.GetDB().First(&plant, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "植物が見つかりません"})
+		return
+	}
+
+	if plant.ImageData == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "画像が登録されていません"})
+		return
+	}
+
+	// Content-Typeを設定
+	c.Header("Content-Type", plant.ImageType)
+	// 画像データを送信
+	c.Data(http.StatusOK, plant.ImageType, plant.ImageData)
 }

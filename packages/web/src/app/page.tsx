@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import Image from 'next/image'
 
 type Plant = {
   id: number
@@ -13,6 +14,7 @@ type Plant = {
   description?: string
   createdAt: string
   updatedAt: string
+  imageType?: string
 }
 
 type APIPlant = {
@@ -44,7 +46,9 @@ export default function Home() {
     location: '',
     notes: ''
   })
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [editingId, setEditingId] = useState<number | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const fetchPlants = async () => {
     try {
@@ -59,6 +63,38 @@ export default function Home() {
   useEffect(() => {
     fetchPlants()
   }, [])
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setSelectedImage(file)
+      // プレビュー用のURLを作成
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
+    }
+  }
+
+  const uploadImage = async (plantId: number, file: File) => {
+    const formData = new FormData()
+    formData.append('image', file)
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/plants/${plantId}/image`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('画像のアップロードに失敗しました')
+      }
+
+      // アップロード後にプレビューをクリア
+      setSelectedImage(null)
+      setPreviewUrl(null)
+    } catch (err) {
+      console.error('Error uploading image:', err)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,6 +123,13 @@ export default function Home() {
         throw new Error(editingId ? 'Failed to update plant' : 'Failed to create plant')
       }
 
+      const result = await response.json()
+
+      // 画像がある場合はアップロード
+      if (selectedImage) {
+        await uploadImage(result.plant.id, selectedImage)
+      }
+
       // フォームをリセット
       setFormData({
         plantName: '',
@@ -96,6 +139,8 @@ export default function Home() {
         notes: ''
       })
       setEditingId(null)
+      setSelectedImage(null)
+      setPreviewUrl(null)
 
       // 植物一覧を再取得
       fetchPlants()
@@ -277,6 +322,37 @@ export default function Home() {
               />
             </div>
 
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                画像
+              </label>
+              <div className="flex items-center space-x-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <label
+                  htmlFor="image-upload"
+                  className="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  画像を選択
+                </label>
+                {previewUrl && (
+                  <div className="relative w-24 h-24">
+                    <Image
+                      src={previewUrl}
+                      alt="Preview"
+                      fill
+                      className="object-cover rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex justify-end space-x-4">
               {editingId && (
                 <button
@@ -303,6 +379,7 @@ export default function Home() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">画像</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">植物名</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">品種</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">購入日</th>
@@ -313,13 +390,31 @@ export default function Home() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {plants.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
                       登録された植物はありません
                     </td>
                   </tr>
                 ) : (
                   plants.map(plant => (
                     <tr key={plant.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="relative w-16 h-16">
+                          {plant.imageType ? (
+                            <Image
+                              src={`http://localhost:8080/api/plants/${plant.id}/image`}
+                              alt={plant.name}
+                              fill
+                              className="object-cover rounded-md"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+                              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.species}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate}</td>

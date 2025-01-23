@@ -7,14 +7,14 @@ import (
 )
 
 type Plant struct {
-	ID           uint           `json:"id" gorm:"primaryKey"`
-	Name         string         `json:"name" gorm:"not null"`
+	ID           uint           `json:"id" gorm:"primarykey"`
+	Name         string         `json:"name"`
 	Species      string         `json:"species"`
 	Description  string         `json:"description"`
 	Location     string         `json:"location"`
-	Notes        string         `json:"notes"`
 	PurchaseDate string         `json:"purchaseDate"`
-	ImageURL     string         `json:"imageUrl"`
+	ImageData    []byte         `json:"imageData,omitempty" gorm:"type:blob"` // 画像のバイナリデータ
+	ImageType    string         `json:"imageType,omitempty"`                  // 画像のMIMEタイプ
 	CreatedAt    time.Time      `json:"createdAt"`
 	UpdatedAt    time.Time      `json:"updatedAt"`
 	DeletedAt    gorm.DeletedAt `json:"deletedAt,omitempty" gorm:"index"`
