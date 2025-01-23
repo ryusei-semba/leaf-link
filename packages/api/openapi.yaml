@@ -1,0 +1,187 @@
+openapi: 3.0.0
+info:
+  title: LeafLink API
+  description: 観葉植物管理アプリケーションのAPI仕様書
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: 開発環境
+
+paths:
+  /api/plants:
+    get:
+      summary: 植物一覧の取得
+      description: 登録されている全ての植物情報を取得します
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Plant'
+    post:
+      summary: 新規植物の登録
+      description: 新しい植物情報を登録します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantInput'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plant'
+        '400':
+          description: 不正なリクエスト
+
+  /api/plants/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: 植物のID
+        schema:
+          type: integer
+    put:
+      summary: 植物情報の更新
+      description: 指定されたIDの植物情報を更新します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantInput'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Plant'
+        '404':
+          description: 植物が見つかりません
+    delete:
+      summary: 植物の削除
+      description: 指定されたIDの植物を削除します
+      responses:
+        '200':
+          description: 削除成功
+        '404':
+          description: 植物が見つかりません
+
+  /api/plants/{id}/image:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: 植物のID
+        schema:
+          type: integer
+    post:
+      summary: 植物画像のアップロード
+      description: 指定されたIDの植物に画像をアップロードします
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: アップロード成功
+        '404':
+          description: 植物が見つかりません
+        '400':
+          description: 不正なリクエスト
+    get:
+      summary: 植物画像の取得
+      description: 指定されたIDの植物の画像を取得します
+      responses:
+        '200':
+          description: 取得成功
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: 画像が見つかりません
+
+components:
+  schemas:
+    Plant:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 植物のID
+        name:
+          type: string
+          description: 植物の名前
+        species:
+          type: string
+          description: 植物の種類
+        description:
+          type: string
+          description: 植物の説明
+        location:
+          type: string
+          description: 設置場所
+        notes:
+          type: string
+          description: メモ
+        purchaseDate:
+          type: string
+          format: date
+          description: 購入日
+        imageData:
+          type: string
+          format: byte
+          description: 画像データ（Base64エンコード）
+        imageType:
+          type: string
+          description: 画像のMIMEタイプ
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+
+    PlantInput:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: 植物の名前
+        species:
+          type: string
+          description: 植物の種類
+        description:
+          type: string
+          description: 植物の説明
+        location:
+          type: string
+          description: 設置場所
+        notes:
+          type: string
+          description: メモ
+        purchaseDate:
+          type: string
+          format: date
+          description: 購入日 
