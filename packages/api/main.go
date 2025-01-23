@@ -32,5 +32,9 @@ func main() {
 	r.PUT("/api/plants/:id", handlers.UpdatePlant)
 	r.DELETE("/api/plants/:id", handlers.DeletePlant)
 
+	// 画像関連のエンドポイントを追加
+	r.POST("/api/plants/:id/image", handlers.UploadPlantImage)
+	r.GET("/api/plants/:id/image", handlers.GetPlantImage)
+
 	r.Run(":8080")
 }
