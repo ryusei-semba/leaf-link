@@ -44,6 +44,7 @@ export default function Home() {
     location: '',
     notes: ''
   })
+  const [editingId, setEditingId] = useState<number | null>(null)
 
   const fetchPlants = async () => {
     try {
@@ -62,8 +63,14 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch('http://localhost:8080/api/plants', {
-        method: 'POST',
+      const url = editingId 
+        ? `http://localhost:8080/api/plants/${editingId}`
+        : 'http://localhost:8080/api/plants'
+      
+      const method = editingId ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -77,7 +84,7 @@ export default function Home() {
       })
       
       if (!response.ok) {
-        throw new Error('Failed to create plant')
+        throw new Error(editingId ? 'Failed to update plant' : 'Failed to create plant')
       }
 
       // フォームをリセット
@@ -88,12 +95,35 @@ export default function Home() {
         location: '',
         notes: ''
       })
+      setEditingId(null)
 
       // 植物一覧を再取得
       fetchPlants()
     } catch (err) {
-      console.error('Error creating plant:', err)
+      console.error('Error saving plant:', err)
     }
+  }
+
+  const handleEdit = (plant: Plant) => {
+    setFormData({
+      plantName: plant.name,
+      species: plant.species || '',
+      purchaseDate: plant.purchaseDate || formatDate(new Date()),
+      location: plant.location || '',
+      notes: plant.description || ''
+    })
+    setEditingId(plant.id)
+  }
+
+  const handleCancel = () => {
+    setFormData({
+      plantName: '',
+      species: '',
+      purchaseDate: formatDate(new Date()),
+      location: '',
+      notes: ''
+    })
+    setEditingId(null)
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -152,7 +182,9 @@ export default function Home() {
         </div>
 
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">新規植物登録</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+            {editingId ? '植物データの編集' : '新規植物登録'}
+          </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -245,12 +277,21 @@ export default function Home() {
               />
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-4">
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
+                >
+                  キャンセル
+                </button>
+              )}
               <button
                 type="submit"
                 className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
               >
-                登録する
+                {editingId ? '更新する' : '登録する'}
               </button>
             </div>
           </form>
@@ -279,11 +320,17 @@ export default function Home() {
                 ) : (
                   plants.map(plant => (
                     <tr key={plant.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.name || plant.plantName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.species}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate || formatDate(new Date(plant.createdAt))}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-900">{getLocationLabel(plant.location)}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4 whitespace-nowrap space-x-4">
+                        <button
+                          onClick={() => handleEdit(plant)}
+                          className="text-blue-600 hover:text-blue-900 focus:outline-none"
+                        >
+                          編集
+                        </button>
                         <button
                           onClick={() => handleDelete(plant.id)}
                           className="text-red-600 hover:text-red-900 focus:outline-none"

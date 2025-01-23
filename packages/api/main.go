@@ -29,6 +29,7 @@ func main() {
 	// APIエンドポイントを設定
 	r.GET("/api/plants", handlers.GetPlants)
 	r.POST("/api/plants", handlers.CreatePlant)
+	r.PUT("/api/plants/:id", handlers.UpdatePlant)
 	r.DELETE("/api/plants/:id", handlers.DeletePlant)
 
 	r.Run(":8080")
