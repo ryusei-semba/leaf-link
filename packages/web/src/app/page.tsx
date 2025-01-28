@@ -267,14 +267,14 @@ export default function Home() {
           </svg>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+        <div className="bg-card-background rounded-lg shadow-lg p-6 mb-8 border border-card-border">
+          <h2 className="text-2xl font-semibold mb-6 text-text-primary">
             {editingId ? '植物データの編集' : '新規植物登録'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="plantName" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="plantName" className="block text-sm font-medium text-text-secondary mb-2">
                   植物の名前
                 </label>
                 <input
@@ -283,14 +283,14 @@ export default function Home() {
                   name="plantName"
                   value={formData.plantName}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="input-field w-full"
                   placeholder="モンステラ"
                   required
                 />
               </div>
               
               <div>
-                <label htmlFor="species" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="species" className="block text-sm font-medium text-text-secondary mb-2">
                   品種
                 </label>
                 <input
@@ -299,13 +299,13 @@ export default function Home() {
                   name="species"
                   value={formData.species}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="input-field w-full"
                   placeholder="デリシオサ"
                 />
               </div>
 
               <div>
-                <label htmlFor="purchaseDate" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="purchaseDate" className="block text-sm font-medium text-text-secondary mb-2">
                   購入日
                 </label>
                 <div className="relative">
@@ -315,11 +315,11 @@ export default function Home() {
                     name="purchaseDate"
                     value={formData.purchaseDate}
                     onChange={handleChange}
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="input-field w-full"
                     required
                   />
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                    <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="h-5 w-5 text-text-secondary" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                     </svg>
                   </div>
@@ -327,7 +327,7 @@ export default function Home() {
               </div>
 
               <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="location" className="block text-sm font-medium text-text-secondary mb-2">
                   設置場所
                 </label>
                 <select
@@ -335,7 +335,7 @@ export default function Home() {
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="input-field w-full"
                   required
                 >
                   <option value="">設置場所を選択</option>
@@ -349,7 +349,7 @@ export default function Home() {
             </div>
 
             <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="notes" className="block text-sm font-medium text-text-secondary mb-2">
                 メモ
               </label>
               <textarea
@@ -358,13 +358,13 @@ export default function Home() {
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="input-field w-full"
                 placeholder="水やりの頻度や特記事項など"
               />
             </div>
 
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-text-secondary mb-2">
                 画像
               </label>
               <div className="flex items-center space-x-4">
@@ -377,7 +377,7 @@ export default function Home() {
                 />
                 <label
                   htmlFor="image-upload"
-                  className="cursor-pointer bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  className="cursor-pointer bg-card-background text-text-primary px-4 py-2 border border-card-border rounded-md shadow-sm text-sm font-medium hover:bg-card-hover focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-colors duration-200"
                 >
                   画像を選択
                 </label>
@@ -399,14 +399,14 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
+                  className="bg-card-background text-text-primary px-6 py-2 rounded-md border border-card-border hover:bg-card-hover focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200"
                 >
                   キャンセル
                 </button>
               )}
               <button
                 type="submit"
-                className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
+                className="btn-primary"
               >
                 {editingId ? '更新する' : '登録する'}
               </button>
@@ -414,30 +414,30 @@ export default function Home() {
           </form>
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-800">登録済み植物一覧</h2>
+        <div className="bg-card-background rounded-lg shadow-lg p-6 border border-card-border">
+          <h2 className="text-2xl font-semibold mb-6 text-text-primary">登録済み植物一覧</h2>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-card-border">
+              <thead className="bg-card-hover">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">画像</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">植物名</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">品種</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">購入日</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">設置場所</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">画像</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">植物名</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">品種</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">購入日</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">設置場所</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">操作</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-card-border">
                 {plants.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-4 text-center text-text-secondary">
                       登録された植物はありません
                     </td>
                   </tr>
                 ) : (
                   plants.map(plant => (
-                    <tr key={plant.id} className="hover:bg-gray-50">
+                    <tr key={plant.id} className="hover:bg-card-hover">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="relative w-16 h-16">
                           {plant.imageType ? (
@@ -448,28 +448,28 @@ export default function Home() {
                               className="object-cover rounded-md"
                             />
                           ) : (
-                            <div className="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
-                              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-16 h-16 bg-card-hover rounded-md flex items-center justify-center">
+                              <svg className="w-8 h-8 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                               </svg>
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.species}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{plant.purchaseDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{getLocationLabel(plant.location)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-text-primary">{plant.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-text-primary">{plant.species}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-text-primary">{plant.purchaseDate}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-text-primary">{getLocationLabel(plant.location)}</td>
                       <td className="px-6 py-4 whitespace-nowrap space-x-4">
                         <button
                           onClick={() => handleEdit(plant)}
-                          className="text-blue-600 hover:text-blue-900 focus:outline-none"
+                          className="text-accent hover:text-accent-hover focus:outline-none"
                         >
                           編集
                         </button>
                         <button
                           onClick={() => handleDelete(plant.id)}
-                          className="text-red-600 hover:text-red-900 focus:outline-none"
+                          className="text-red-500 hover:text-red-700 focus:outline-none"
                         >
                           削除
                         </button>
