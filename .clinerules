@@ -68,4 +68,51 @@ Closes #123
 #### Prompt History
 - ユーザーが指示したプロンプトの履歴を記載
 - プロンプトに関連する追加のコンテキスト情報も含める
+
+# ブランチ運用ルール
+
+### 1. ブランチ命名規則
+```
+feature/yyyymmdd_機能名
+```
+例：
+- feature/20240128_dark_mode
+- feature/20240128_api_docs
+
+### 2. 作業開始時のフロー
+1. mainブランチの最新化
+```bash
+git checkout main
+git pull origin main
+```
+
+2. 作業用ブランチの作成と切り替え
+```bash
+git checkout -b feature/$(date +%Y%m%d)_機能名
+```
+
+### 3. 作業完了時のフロー
+1. 変更内容のコミット
+```bash
+git add .
+git commit -m "feat(scope): コミットメッセージ"
+```
+
+2. リモートへのプッシュ
+```bash
+git push origin feature/yyyymmdd_機能名
+```
+
+3. プルリクエストの作成
+- GitHubの自動生成されたURLからプルリクエストを作成
+- プルリクエストのタイトルはコミットメッセージに準拠
+- 説明文には実装内容の詳細を記載
+
+### 4. レビュー後のマージフロー
+1. プルリクエストのマージ（GitHub上で実行）
+2. ローカルでの後処理
+```bash
+git checkout main
+git pull origin main
+git branch -d feature/yyyymmdd_機能名
 ``` 
