@@ -38,7 +38,8 @@ const formatDate = (date: Date): string => {
 }
 
 export default function Home() {
-  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false);
+  const { theme, setTheme } = useTheme();
   const [plants, setPlants] = useState<Plant[]>([])
   const [apiPlants, setApiPlants] = useState<APIPlant[]>([])
   const [formData, setFormData] = useState({
@@ -51,6 +52,10 @@ export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchPlants = async () => {
     try {
@@ -207,66 +212,47 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-text-primary">観葉植物管理システム</h1>
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="p-3 rounded-full bg-card-background border border-card-border shadow-lg hover:bg-card-hover transition-colors duration-200"
-            aria-label="テーマの切り替え"
-          >
-            {theme === 'dark' ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
-                />
-              </svg>
-            )}
-          </button>
+          {mounted && (
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-3 rounded-full bg-card-background border border-card-border shadow-lg hover:bg-card-hover transition-colors duration-200"
+              aria-label="テーマの切り替え"
+            >
+              {theme === 'dark' ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
+                  />
+                </svg>
+              )}
+            </button>
+          )}
         </div>
         
-        {/* Large Top Left Leaf */}
-        <div className="fixed -top-32 -left-32 w-[500px] h-[500px] text-green-200 pointer-events-none">
-          <svg className="w-full h-full transform rotate-45 leaf-wave" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17 8C17 8 17.5 14 12 19.5C6.5 14 7 8 7 8C7 8 7 3 12 3C17 3 17 8 17 8Z"/>
-          </svg>
-        </div>
-
-        {/* Large Bottom Right Leaf */}
-        <div className="fixed -bottom-24 -right-24 w-[400px] h-[400px] text-emerald-200 pointer-events-none">
-          <svg className="w-full h-full transform -rotate-12 leaf-wave" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '0.5s' }}>
-            <path d="M12 2C15 2 17 4 17 8C17 12 12 19.5 12 19.5C12 19.5 7 12 7 8C7 4 9 2 12 2Z"/>
-          </svg>
-        </div>
-
-        {/* Additional Decorative Leaves */}
-        <div className="fixed -top-16 -right-16 w-48 h-48 text-green-200 pointer-events-none">
-          <svg className="w-full h-full transform rotate-90 leaf-wave" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '1s' }}>
-            <path d="M12 3C15 3 17 5 17 8C17 11 12 17 12 17C12 17 7 11 7 8C7 5 9 3 12 3Z"/>
-          </svg>
-        </div>
-
         <div className="bg-card-background rounded-lg shadow-lg p-6 mb-8 border border-card-border">
           <h2 className="text-2xl font-semibold mb-6 text-text-primary">
             {editingId ? '植物データの編集' : '新規植物登録'}

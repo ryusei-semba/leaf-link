@@ -14,7 +14,7 @@
   --accent-hover: #065f46;
 }
 
-[data-theme='dark'] {
+.dark {
   --background: #111827;
   --foreground: #f9fafb;
   --card-background: #1f2937;
@@ -53,67 +53,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   right: 0;
   top: 0;
   width: auto;
-}
-
-@keyframes leafWave {
-  0% {
-    transform: rotate(-8deg) scale(0.95);
-  }
-  25% {
-    transform: rotate(0deg) scale(1.05);
-  }
-  50% {
-    transform: rotate(8deg) scale(0.95);
-  }
-  75% {
-    transform: rotate(0deg) scale(1.05);
-  }
-  100% {
-    transform: rotate(-8deg) scale(0.95);
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-20px) scale(1.1);
-  }
-  100% {
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.2;
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 0.5;
-  }
-}
-
-.leaf-wave {
-  animation: leafWave 12s ease-in-out infinite;
-  transform-origin: center center;
-  will-change: transform;
-}
-
-.float {
-  animation: float 6s ease-in-out infinite;
-  will-change: transform;
-}
-
-.ripple {
-  animation: ripple 4s ease-in-out infinite;
-  will-change: transform, opacity;
 }
 
 @layer components {
